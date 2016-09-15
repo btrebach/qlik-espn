@@ -24,8 +24,8 @@ Trim(
 
 Set fx_GetPlayerStatus = 
 Trim(
-	if(SubField($1,' ',2) <> 'D/ST'
-		,SubField($1,' ',5)
+	if(SubField($1,' ',2) <> 'D/ST' And Match(SubField($1,' ',-1),$(vStatusTypes))
+		,SubField($1,' ',-1)
     )
 )
 ;
