@@ -42,7 +42,11 @@ Players:
 NoConcatenate
 LOAD
   *
-  ,[Fantasy Team ID]&'|'&[Player Name]&'|'&[Week Num] as %FantasyTeamIDPlayerWeek
+  ,[Fantasy Team ID]&'|'&[Player Name]&'|'&[Player Position]&'|'&[NFL Team Name]&'|'&[Week Num] as %FantasyTeamIDPlayerWeek
+  ,If([Fantasy Team ID] = 0
+  	,'Available'
+    ,'Owned'
+  ) as [Available/Owned]
 ;
 LOAD
   $(fx_GetPlayerName(@1)) as [Player Name]
@@ -59,4 +63,3 @@ DROP TABLE [Players TEMP];
 
 STORE Players into [$(vFantasyDir)\$(vSeasonID)_Players$(vLeagueID)_Week$(vCurrentWeek).qvd](qvd);
 DROP TABLE Players;
-

@@ -1,8 +1,10 @@
 Players:
 LOAD 
   %FantasyTeamIDPlayerWeek
-  ,[Player Name]
+//  ,Dual([Player Name],RowNo()) as [Player Name]
+  ,Dual([Player Name], AutoNumber([Player Name]&'|'&[NFL Team Name]&'|'&[Player Position])) as [Player Name]
   ,[Fantasy Team ID]
+  ,[Available/Owned]
   ,[Week Num]
   ,[Player Position]
   ,[NFL Team Name]
@@ -14,20 +16,32 @@ FROM [$(vFantasyDir)\$(vSeasonID)_Players$(vLeagueID)_Week*.qvd](qvd);
 LEFT JOIN(Players)
 LOAD
   [Player Name]
+  ,[Player Position]
+  ,[NFL Team Name]
   ,[Week Num] - 1 as [Week Num]
   ,[Previous Week Points] as [Points]
 RESIDENT Players
 WHERE [Week Num] > 1;
 
-DROP FIELD 
-  [Week Num]
-  ,[Fantasy Team ID]
+Drop Field
+	[Fantasy Team ID]
 FROM Players;
 
 [Fantasy Team]:
-LOAD *
+LOAD 
+	%FantasyTeamIDWeek
+    ,[Matchup ID]
+    ,[Fantasy Team Name]
+    ,[Fantasy Team Opponent Name]
+    ,[Fantasy Team Opponent ID]
+    ,[Fantasy Team ID]
+    ,[Home/Away]
 FROM [$(vFantasyDir)\$(vSeasonID)_FantasyTeam$(vLeagueID)_Week*.qvd](qvd);
 
 [Roster]:
-LOAD *
+LOAD 
+	%FantasyTeamIDWeek
+    ,%FantasyTeamIDPlayerWeek
+    ,[Start/Sit]
+    ,[Player/Opponent]
 FROM [$(vFantasyDir)\$(vSeasonID)_Roster$(vLeagueID)_Week*.qvd](qvd);

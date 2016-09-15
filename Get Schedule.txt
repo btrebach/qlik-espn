@@ -1,8 +1,17 @@
+map_FantasyTeamNameToID:
+MAPPING LOAD
+	[Fantasy Team Name]
+    ,[Fantasy Team ID]
+RESIDENT [Fantasy Team];
+
 Schedule:
 LOAD 
-	subfield(@1,' (',1) as [Fantasy Team Name], 
-	subfield(@4,' (',1)as [Fantasy Team Name Opponent],
-	ceil(rowno()/(NoOfRows('Fantasy Team')/2)) as [Week Num]
+	RowNo() as [Matchup ID]
+	,applymap('map_FantasyTeamNameToID',subfield(@1,' (',1), 'Map Missing') as [Fantasy Team ID]
+	,applymap('map_FantasyTeamNameToID',subfield(@4,' (',1), 'Map Missing') as [Fantasy Team Opponent ID]
+    ,subfield(@4,' (',1) as [Fantasy Team Opponent Name]
+	,ceil(rowno()/(NoOfRows('Fantasy Team')/2)) as [Week Num]
+    ,'Home' as [Home/Away]
 FROM
 [http://games.espn.go.com/ffl/schedule?leagueId=$(vLeagueID)]
 (html, codepage is 1252, no labels, table is @1)
@@ -12,9 +21,12 @@ AND @1 <> '';
 Schedule_Away:
 NoConcatenate
 LOAD 
-	subfield(@4,' (',1) as [Fantasy Team Name], 
-	subfield(@1,' (',1) as [Fantasy Team Name Opponent],
-	ceil(rowno()/(NoOfRows('Fantasy Team')/2)) as [Week Num]
+	RowNo() as [Matchup ID]
+	,applymap('map_FantasyTeamNameToID',subfield(@4,' (',1), 'Map Missing') as [Fantasy Team ID]
+	,applymap('map_FantasyTeamNameToID',subfield(@1,' (',1), 'Map Missing') as [Fantasy Team Opponent ID]
+    ,subfield(@1,' (',1) as [Fantasy Team Opponent Name]
+	,ceil(rowno()/(NoOfRows('Fantasy Team')/2)) as [Week Num]
+    ,'Away' as [Home/Away]
 FROM
 [http://games.espn.go.com/ffl/schedule?leagueId=$(vLeagueID)]
 (html, codepage is 1252, no labels, table is @1)
@@ -26,16 +38,20 @@ LOAD * RESIDENT Schedule_Away;
 DROP TABLE Schedule_Away;
 
 LEFT JOIN([Fantasy Team])
-LOAD * RESIDENT Schedule;
+LOAD * RESIDENT Schedule
+WHERE [Week Num] <= '$(vCurrentWeek)';
 DROP TABLE Schedule;
 
 [Fantasy Team NEW]:
 NoConcatenate
 LOAD
 	[Fantasy Team ID]&'|'&[Week Num] as %FantasyTeamIDWeek
+    ,[Matchup ID]
 	,[Fantasy Team Name]
-	,[Fantasy Team Name Opponent]
+    ,[Fantasy Team Opponent Name]
+	,[Fantasy Team Opponent ID]
     ,[Fantasy Team ID]
+    ,[Home/Away]
     ,[Week Num]
 RESIDENT [Fantasy Team];
 DROP TABLE [Fantasy Team];

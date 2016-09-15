@@ -3,6 +3,13 @@ NoConcatenate
 LOAD DISTINCT
 	[Fantasy Team ID]
 RESIDENT [Fantasy Team];
+
+map_FantasyTeamIDToFantasyTeamOpponentID:
+MAPPING LOAD
+	%FantasyTeamIDWeek
+    ,[Fantasy Team Opponent ID]
+RESIDENT [Fantasy Team];
+
 DROP TABLE [Fantasy Team];
 
 For i = 0 to NoOfRows('Fantasy Team IDs TEMP') - 1
@@ -13,13 +20,16 @@ For i = 0 to NoOfRows('Fantasy Team IDs TEMP') - 1
 
     Roster:
     LOAD
-      [Fantasy Team ID]&'|'&[Player Name]&'|$(vCurrentWeek)' as %FantasyTeamIDPlayerWeek
+      [Fantasy Team ID]&'|'&[Player Name]&'|'&[Player Position]&'|'&[NFL Team Name]&'|$(vCurrentWeek)' as %FantasyTeamIDPlayerWeek
       ,[Fantasy Team ID]&'|$(vCurrentWeek)' as %FantasyTeamIDWeek
       ,[Start/Sit]
+      ,'Player' as [Player/Opponent]
     ;
     LOAD 
-      '$(vFantasyTeamID)' as [Fantasy Team ID],
-      $(fx_GetPlayerName(STARTERS1)) as [Player Name]
+      '$(vFantasyTeamID)' as [Fantasy Team ID]
+      ,$(fx_GetPlayerName(STARTERS1)) as [Player Name]
+      ,$(fx_GetPlayerPosition(STARTERS1)) as [Player Position]
+  	  ,$(fx_GetPlayerNFLTeam(STARTERS1)) as [NFL Team Name]
       ,if(STARTERS = 'Bench'
         ,'Bench'
         ,'Starter'
@@ -32,9 +42,9 @@ For i = 0 to NoOfRows('Fantasy Team IDs TEMP') - 1
     WHERE STARTERS1 <> 'PLAYER, TEAM POS'
     AND STARTERS1 <> 'BENCH'
     ;
-		
+
 next i
-	
+
 Set vFantasyTeamID =;
 Set i=;
 
