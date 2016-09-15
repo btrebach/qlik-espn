@@ -1,0 +1,68 @@
+map_DefenseNickToTeamName:
+MAPPING LOAD * INLINE [
+DefenseNick,	TeamName
+Cardinals,		Ari
+Falcons,		Atl
+Ravens,			Bal
+Bills,			Buf
+Panthers,		Car
+Bears,			Chi
+Bengals,		Cin
+Browns,			Cle
+Cowboys,		Dal
+Broncos,		Den
+Lions,			Det
+Packers,		GB
+Texans,			Hou
+Colts,			Ind	
+Jaguars,		Jax
+Chiefs,			KC
+Dolphins,		Mia
+Vikings,		Min
+Patriots,		NE
+Saints,			NO
+Giants,			NYG
+Jets,			NYJ
+Raiders,		Oak
+Eagles,			Phi
+Steelers,		Pit
+Chargers,		SD
+Seahawks,		Sea
+49ers,			SF
+Rams,			LA
+Buccaneers,		TB
+Titans,			Ten
+Redskins,		Wsh
+];
+
+map_FantasyTeamNameShortToLong_1407806:
+MAPPING LOAD * INLINE [
+Team Abbrev,	Fantasy Team ID
+FRYE,			1
+SHER,			8
+RKO,			5	
+MVD,			14
+BZZ,			2
+ACL,			17
+KNOX,			9
+Laur,			13
+Will,			6
+MATT,			15
+Murr,			11
+RAHA,			16
+];
+
+map_FantasyTeamNameShortToLong_1195824:
+MAPPING LOAD * INLINE [
+Team Abbrev,	Fantasy Team ID
+Gary,			6
+GORD,			1
+ZSM,			2
+FF,				5
+Kate,			7
+Mike,			10
+ILL,			3
+MATT,			4
+Mom,			8
+Erin,			9
+];

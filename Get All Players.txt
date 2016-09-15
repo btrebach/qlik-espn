@@ -1,0 +1,62 @@
+TRACE Storing Player Stats for Week $(vCurrentWeek);
+
+[Players TEMP]:
+LOAD 
+	1 as PLAYERS
+AutoGenerate(0);
+
+Let playerCount = 50;
+Let pageNum = 0;
+
+Do While playerCount > 49;
+
+  Let startIndex = pageNum * 50;
+  Trace Start Index: $(startIndex);
+  
+  [Players ITER]:
+  NoConcatenate
+  LOAD 
+    @1
+    ,@3
+    ,@12
+    ,@14
+  FROM [http://games.espn.com/ffl/freeagency?leagueId=$(vLeagueID)&teamId=1&seasonId=$(vSeasonID)&avail=-1&startIndex=$(startIndex)]
+  (html, codepage is 1252, no labels, table is @1)
+  ;
+  
+  Let playerCount = NoOfRows('Players ITER');
+  Let pageNum = pageNum + 1;
+  
+  Concatenate([Players TEMP])
+  LOAD 
+  	* Resident [Players ITER];
+  DROP TABLE [Players ITER];
+
+Loop
+
+Set startIndex=;
+Set pageNum=;
+Set playerCount=;
+
+Players:
+NoConcatenate
+LOAD
+  *
+  ,[Fantasy Team ID]&'|'&[Player Name]&'|'&[Week Num] as %FantasyTeamIDPlayerWeek
+;
+LOAD
+  $(fx_GetPlayerName(@1)) as [Player Name]
+  ,ApplyMap('map_FantasyTeamNameShortToLong_$(vLeagueID)',@3,0) as [Fantasy Team ID]
+  ,'$(vCurrentWeek)' as [Week Num]
+  ,$(fx_GetPlayerPosition(@1)) as [Player Position]
+  ,$(fx_GetPlayerNFLTeam(@1)) as [NFL Team Name]
+  ,$(fx_GetPlayerStatus(@1)) as [Player Status]
+  ,@12 as [Previous Week Points]
+  ,@14 as Projection
+RESIDENT [Players TEMP]
+WHERE NOT WILDMATCH($(fx_GetPlayerName(@1)),'PLAYER*');
+DROP TABLE [Players TEMP];
+
+STORE Players into [$(vFantasyDir)\$(vSeasonID)_Players$(vLeagueID)_Week$(vCurrentWeek).qvd](qvd);
+DROP TABLE Players;
+

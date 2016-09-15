@@ -1,0 +1,44 @@
+Schedule:
+LOAD 
+	subfield(@1,' (',1) as [Fantasy Team Name], 
+	subfield(@4,' (',1)as [Fantasy Team Name Opponent],
+	ceil(rowno()/(NoOfRows('Fantasy Team')/2)) as [Week Num]
+FROM
+[http://games.espn.go.com/ffl/schedule?leagueId=$(vLeagueID)]
+(html, codepage is 1252, no labels, table is @1)
+WHERE NOT WILDMATCH(@1,'AWAY TEAM','*WEEK*')
+AND @1 <> '';
+
+Schedule_Away:
+NoConcatenate
+LOAD 
+	subfield(@4,' (',1) as [Fantasy Team Name], 
+	subfield(@1,' (',1) as [Fantasy Team Name Opponent],
+	ceil(rowno()/(NoOfRows('Fantasy Team')/2)) as [Week Num]
+FROM
+[http://games.espn.go.com/ffl/schedule?leagueId=$(vLeagueID)]
+(html, codepage is 1252, no labels, table is @1)
+WHERE NOT WILDMATCH(@1,'AWAY TEAM','*WEEK*')
+AND @1 <> '';
+
+Concatenate(Schedule)
+LOAD * RESIDENT Schedule_Away;
+DROP TABLE Schedule_Away;
+
+LEFT JOIN([Fantasy Team])
+LOAD * RESIDENT Schedule;
+DROP TABLE Schedule;
+
+[Fantasy Team NEW]:
+NoConcatenate
+LOAD
+	[Fantasy Team ID]&'|'&[Week Num] as %FantasyTeamIDWeek
+	,[Fantasy Team Name]
+	,[Fantasy Team Name Opponent]
+    ,[Fantasy Team ID]
+    ,[Week Num]
+RESIDENT [Fantasy Team];
+DROP TABLE [Fantasy Team];
+RENAME TABLE [Fantasy Team NEW] to [Fantasy Team];
+
+STORE [Fantasy Team] into [$(vFantasyDir)\$(vSeasonID)_FantasyTeam$(vLeagueID)_Week$(vCurrentWeek).qvd](qvd);

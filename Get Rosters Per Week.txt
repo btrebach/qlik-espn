@@ -1,0 +1,44 @@
+[Fantasy Team IDs TEMP]:
+NoConcatenate
+LOAD DISTINCT
+	[Fantasy Team ID]
+RESIDENT [Fantasy Team];
+DROP TABLE [Fantasy Team];
+
+For i = 0 to NoOfRows('Fantasy Team IDs TEMP') - 1
+
+	Let vFantasyTeamID = peek('Fantasy Team ID',$(i),'Fantasy Team IDs TEMP');
+
+	Trace Fantasy Team ID: $(vFantasyTeamID);
+
+    Roster:
+    LOAD
+      [Fantasy Team ID]&'|'&[Player Name]&'|$(vCurrentWeek)' as %FantasyTeamIDPlayerWeek
+      ,[Fantasy Team ID]&'|$(vCurrentWeek)' as %FantasyTeamIDWeek
+      ,[Start/Sit]
+    ;
+    LOAD 
+      '$(vFantasyTeamID)' as [Fantasy Team ID],
+      $(fx_GetPlayerName(STARTERS1)) as [Player Name]
+      ,if(STARTERS = 'Bench'
+        ,'Bench'
+        ,'Starter'
+      )
+    	as [Start/Sit]
+      ,STARTERS as Slot
+    FROM
+    [http://games.espn.go.com/ffl/clubhouse?leagueId=$(vLeagueID)&teamId=$(vFantasyTeamID)&seasonId=$(vSeasonID)&scoringPeriodId=$(vCurrentWeek)]
+    (html, codepage is 1252, embedded labels, table is @1)
+    WHERE STARTERS1 <> 'PLAYER, TEAM POS'
+    AND STARTERS1 <> 'BENCH'
+    ;
+		
+next i
+	
+Set vFantasyTeamID =;
+Set i=;
+
+DROP TABLE [Fantasy Team IDs TEMP];
+
+STORE Roster into [$(vFantasyDir)\$(vSeasonID)_Roster$(vLeagueID)_Week$(vCurrentWeek).qvd](qvd);
+DROP TABLE Roster;

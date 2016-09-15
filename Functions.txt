@@ -1,0 +1,31 @@
+Set fx_GetPlayerName = 
+Trim(
+  if(SubField($1,' ',2) = 'D/ST'
+      ,SubField($1,' ',1)&' D/ST'
+      ,PurgeChar(SubField($1,',',1),'*')
+  )
+);
+
+Set fx_GetPlayerPosition =
+Trim(
+  if(SubField($1,' ',2) = 'D/ST'
+      ,'D/ST'
+      ,PurgeChar(SubField(SubField($1,',',2),' ',3),' ')
+  )
+);
+
+Set fx_GetPlayerNFLTeam = 
+Trim(
+	if(SubField($1,' ',2) = 'D/ST'
+      ,ApplyMap('map_DefenseNickToTeamName',SubField($1,' ',1),'Missing Map')
+      ,PurgeChar(SubField(SubField($1,',',2),' ',2),' ')
+	)
+);
+
+Set fx_GetPlayerStatus = 
+Trim(
+	if(SubField($1,' ',2) <> 'D/ST'
+		,SubField($1,' ',5)
+    )
+)
+;

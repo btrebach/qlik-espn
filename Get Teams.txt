@@ -1,0 +1,42 @@
+Let vNumOfTeamsFound = 0;
+Let vFantasyTeamID = 0;
+
+Do While vNumOfTeamsFound < vNumOfFantasyTeams;
+
+	Trace Num of Teams Found: $(vNumOfTeamsFound), Fantasy Team ID: $(vFantasyTeamID);
+
+    [Fantasy Team TEMP]:
+    LOAD
+    	[Fantasy Team Name TEMP]
+    WHERE NOT ISNULL([Fantasy Team Name TEMP])
+    AND [Fantasy Team Name TEMP] <> 'Error'
+    //AND NOT EXISTS([Fantasy Team Name],[Fantasy Team Name TEMP])
+    ;
+    LOAD DISTINCT
+    	subfield(subfield(@1,'<title>',2),' - Free Fantasy Football',1) as [Fantasy Team Name TEMP]
+    FROM
+    [http://games.espn.go.com/ffl/clubhouse?leagueId=$(vLeagueID)&teamId=$(vFantasyTeamID)&seasonId=$(vSeasonID)]
+    (txt, codepage is 1252, no labels, delimiter is '\t', msq)
+    //WHERE NOT EXISTS([Fantasy Team Name], subfield(subfield(@1,'<title>',2),' - Free Fantasy Football',1))
+    ;
+    
+    If NoOfRows('Fantasy Team TEMP') > 0 Then
+      
+      [Fantasy Team]:
+	  LOAD
+      	'$(vFantasyTeamID)' as [Fantasy Team ID]
+        ,[Fantasy Team Name TEMP] as [Fantasy Team Name]
+      RESIDENT [Fantasy Team TEMP];
+      DROP TABLE [Fantasy Team TEMP];
+      
+      Let vNumOfTeamsFound = NoOfRows('Fantasy Team');
+
+	Else
+    End If
+    
+    Let vFantasyTeamID = vFantasyTeamID + 1;
+
+Loop
+
+Let vNumOfTeamsFound=;
+
