@@ -38,7 +38,7 @@ Redskins,		Wsh
 map_FantasyTeamNameShortToLong_1407806:
 MAPPING LOAD * INLINE [
 Team Abbrev,	Fantasy Team ID
-FRYE,			1
+BRGR,			1
 SHER,			8
 RKO,			5	
 MVD,			14
@@ -48,7 +48,7 @@ KNOX,			9
 Laur,			13
 Will,			6
 MATT,			15
-Murr,			11
+MURR,			18
 RAHA,			16
 ];
 
@@ -56,7 +56,7 @@ map_FantasyTeamNameShortToLong_1195824:
 MAPPING LOAD * INLINE [
 Team Abbrev,	Fantasy Team ID
 Gary,			6
-GORD,			1
+BEEF,			1
 ZSM,			2
 FF,				5
 Kate,			7
