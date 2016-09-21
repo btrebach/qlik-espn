@@ -20,6 +20,7 @@ SET CollationLocale='en-US';
 //Create a folder in the c: root called "Fantasy" so QVD snapshots can be stored
 //Relaod every Tuesday morning to get the previous week's scores and Thursday afternoon before the Thursday night game to get current week's projections
 
+Let vCurrentWeek = 3;
 Let vSeasonID = 2016;
 Set vFantasyDir = lib://Fantasy/;
 
