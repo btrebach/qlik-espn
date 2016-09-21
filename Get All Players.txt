@@ -20,7 +20,7 @@ Do While playerCount > 49;
     ,@3
     ,@12
     ,@14
-  FROM [http://games.espn.com/ffl/freeagency?leagueId=$(vLeagueID)&teamId=1&seasonId=$(vSeasonID)&avail=-1&startIndex=$(startIndex)]
+  FROM [http://games.espn.com/ffl/freeagency?leagueId=$(vLeagueID)&teamId=1&seasonId=$(vSeasonID)&avail=-1&startIndex=$(startIndex)&scoringPeriodId=$(vCurrentWeek)]
   (html, codepage is 1252, no labels, table is @1)
   ;
   
